@@ -26,27 +26,20 @@ public class PlayerMove : MonoBehaviour
     float yVelocity = 0f;
 
     Vector3 dir;
-    CharacterController cc;
-
-    // Palyer(Cube) 변수
-    public float jumpPower = 2f;
-    bool jumpState = false;         // jump 상태(ture: 점프중 // false: 점프X) - 이단 점프 방지
-    bool jumpTurn = true;           // jump시 회전을 180도로 제한하기 위한 변수
-    bool dropTurn = true;           // drop시 회전을 90도로 제한하기 위한 변수
-    public float turnSpeed = 500f;  // 회전 모션 속도
-    float rot = 0f;                 // jump에서 공중회전 각도 누적 변수
-    
-    GameObject MotionCube;
-
-    // Player(Locket) 변수
-    float AntiGravity = 8.0f;       // Rocket Moded에서 중력에 반대방향으로 동작하는 힘 (일단 public으로 하고 조절하며 값 알아보기)
+    CharacterController cc0;
 
     // Start is called before the first frame update
     void Start()
     {
-        cc = GetComponent<CharacterController>();
+        GameObject CC1 = transform.GetChild(1).gameObject;
+        GameObject CC2 = transform.GetChild(2).gameObject;
+
+        cc0 = GetComponent<CharacterController>();
+        cc1 = CC1.GetComponent<CharacterController>();
+        cc2 = CC2.GetComponent<CharacterController>();
         dir = Vector3.forward;
         MotionCube = GameObject.Find("MotionCube");
+        MotionRocket = GameObject.Find("MotionRocket");
         Mode = ModeState.CUBE;
     }
 
@@ -60,12 +53,30 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    // Mode: Cube일 때
+    // [Mode: Cube일 때]
+    // Player(Cube) 변수
+    public float CubeGravity = -9.8f;    // Cube 모드의 중력
+    public float jumpPower = 2f;
+    bool jumpState = false;         // jump 상태(ture: 점프중 // false: 점프X) - 이단 점프 방지
+    bool jumpTurn = true;           // jump시 회전을 180도로 제한하기 위한 변수
+    bool dropTurn = true;           // drop시 회전을 90도로 제한하기 위한 변수
+    public float turnSpeed = 500f;  // 회전 모션 속도
+    float rot = 0f;                 // jump에서 공중회전 각도 누적 변수
+
+    GameObject MotionCube;
+    CharacterController cc1;
+    CharacterController cc2;
+    // Player(Cube) 함수
     private void UpdateCube()
     {
+        gravity = CubeGravity;       // Cube 모드일때 중력 적용
+
+        //MotionRocket.SetActive(false);
+        //MotionCube.SetActive(true);
+
         // 1. 바닥과 접촉여부 검사
         // 1-1) 바닥과 접촉인 경우
-        if (cc.isGrounded)
+        if (cc0.isGrounded)
         {
             yVelocity = 0;      // 중력 누적 X
             jumpState = false;
@@ -98,20 +109,34 @@ public class PlayerMove : MonoBehaviour
         }
         dir.y = yVelocity;              // dir.y에 yVelocity 적용
 
-        // 3. cc에 움직입 적용
-        cc.Move(dir * moveSpeed * Time.deltaTime);
+        // 3. cc0에 움직입 적용
+        cc0.Move(dir * moveSpeed * Time.deltaTime);
+        //cc1.Move(dir * moveSpeed * Time.deltaTime);
+        //cc2.Move(dir * moveSpeed * Time.deltaTime);
+
     }
 
-    // Mode: Player일때 동작
+    // [Mode: Rocket일 때]
+    // Player(Locket) 변수
+    public float RocketGravity = 5.0f;  // Rocket 모드의 중력  
+    
+
+
+    GameObject MotionRocket;
+
     private void UpdateRocket()
     {
-        MotionCube.SetActive(false);
+        gravity = RocketGravity;
 
+        //MotionCube.SetActive(false);
+        //MotionRocket.SetActive(true);
+        
 
     }
 
+
     // (Cube) jump시 MotinoCube 180도 회전 모션 함수
-    public void JumpTurn()      
+    public void JumpTurn()
     {
         rot += turnSpeed * Time.deltaTime;
         if (rot < 180) MotionCube.transform.rotation = Quaternion.Euler(rot, 0, 0);
