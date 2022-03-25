@@ -8,11 +8,11 @@ using UnityEngine.EventSystems;
 public class PlayerMove : MonoBehaviour
 {
     // Player mode
-    enum ModeState { 
+    public enum ModeState { 
         CUBE,
         ROCKET
     }
-    ModeState Mode;
+    public ModeState Mode;
 
     // 공통 변수
     public float moveSpeed = 20f;        
@@ -33,11 +33,29 @@ public class PlayerMove : MonoBehaviour
         cc1 = CC1.GetComponent<CharacterController>();
         cc2 = CC2.GetComponent<CharacterController>();
         dir = Vector3.forward;
-        MotionCube = GameObject.Find("MotionCube");
-        MotionRocket = GameObject.Find("MotionRocket");
-        Mode = ModeState.CUBE;
-        //Mode = ModeState.ROCKET;
+
+        SetMode();
+
+        //print("MotionCube" + MotionCube.name);
+        //print("MotionRocket" + MotionRocket.name);
     }
+
+    void SetMode()
+    {
+        if (Mode == ModeState.CUBE)
+        {
+            MotionCube.SetActive(true);
+            MotionRocket.SetActive(false);
+        }
+        else if (Mode == ModeState.ROCKET)
+        {
+            MotionCube.SetActive(false);
+            MotionRocket.SetActive(true);
+        }
+
+    }
+
+
 
     // Update is called once per frame
     void Update()
@@ -58,9 +76,9 @@ public class PlayerMove : MonoBehaviour
     public float turnSpeed = 500f;  // 회전 모션 속도
     float rot = 0f;                 // jump에서 공중회전 각도 누적 변수
 
-    GameObject MotionCube;
-    CharacterController cc1;
-    CharacterController cc2;
+    public GameObject MotionCube;
+    CharacterController cc1;        // 자식Object CC1의 Charater Controller
+    CharacterController cc2;        // 자식Object CC2의 Charater Controller
 
     private void UpdateCube()
     {
@@ -133,7 +151,7 @@ public class PlayerMove : MonoBehaviour
     public float upPower = 1.0f;         // space 누를 때, 위로 올라가는 힘
     float angle = 0f;
 
-    GameObject MotionRocket;
+    public GameObject MotionRocket;
 
     private void UpdateRocket()
     {
@@ -153,17 +171,20 @@ public class PlayerMove : MonoBehaviour
 
 
         // 2. MotionRocket 방향 설정
-        //  : dir벡터와 Vector3의 사이각을 구하여 MotionRocket이 진행방향에 따라 방향을 틀도록 설정
-
-        if (cc0.isGrounded)
+        //  : dir벡터와 Vector3의 사이각을 구하여 MotionRocket이 진행방향에 따라 방향을 향하도록 설정
+        if ((cc0.collisionFlags & CollisionFlags.Below) != 0)
+        //if (cc0.isGrounded)
         {
-            angle = Mathf.Lerp(0, angle, 0.9f);         // 자연스럽게 바닥에 착지하는 모션
+            angle = Mathf.Lerp(0, angle, 0.9f);      // 자연스럽게 바닥에 착지하는 모션을 위한 선형보간
+        }
+        else if ((cc0.collisionFlags & CollisionFlags.Above) != 0)
+        {
+            angle = Mathf.Lerp(0, angle, 0.9f);
         }
         else
         {
             angle = Vector3.Angle(Vector3.forward, dir.normalized);
         }
-
         // Vector3.Angle()은 결과를 절댓값으로 반환하므로 dir.y에 따라 양수, 음수     
         if (dir.y > 0)      
         {
@@ -175,8 +196,9 @@ public class PlayerMove : MonoBehaviour
 
         // 3. 움직임 적용
         cc0.Move(dir * moveSpeed * Time.deltaTime); // 움직임 적용하기 
-
         
+
+
     }
 
     // (공통) Player 죽음 
