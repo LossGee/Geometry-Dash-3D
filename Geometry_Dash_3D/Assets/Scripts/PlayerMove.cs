@@ -19,19 +19,16 @@ public class PlayerMove : MonoBehaviour
     float gravity = -9.8f;
     float yVelocity = 0f;
     public float jumpPower = 2f;
+    float preZpos;                  // Move 이전 z좌표    
+    float currentZpos;              // Move 이후 z좌표
 
     Vector3 dir;
-    CharacterController cc0;
+    CharacterController cc;
 
     // Start is called before the first frame update
     void Start()
     {
-        GameObject CC1 = transform.GetChild(1).gameObject;
-        GameObject CC2 = transform.GetChild(2).gameObject;
-
-        cc0 = GetComponent<CharacterController>();
-        cc1 = CC1.GetComponent<CharacterController>();
-        cc2 = CC2.GetComponent<CharacterController>();
+        cc = GetComponent<CharacterController>();
         dir = Vector3.forward;
 
         SetMode();
@@ -40,6 +37,7 @@ public class PlayerMove : MonoBehaviour
         //print("MotionRocket" + MotionRocket.name);
     }
 
+    // (공통) Mode 전환 함수: Motion을 담당하는 객체를 활성화/비활성화
     void SetMode()
     {
         if (Mode == ModeState.CUBE)
@@ -54,16 +52,26 @@ public class PlayerMove : MonoBehaviour
         }
 
     }
-
-
+    // (공통) Player 죽음 
+    public void Dead()
+    {
+        if (currentZpos <= preZpos)
+            Destroy(gameObject);
+    }
 
     // Update is called once per frame
     void Update()
     {
         switch (Mode)
         {
-            case ModeState.CUBE: UpdateCube(); break;
-            case ModeState.ROCKET: UpdateRocket(); break;
+            case ModeState.CUBE: 
+                UpdateCube();
+                Dead();
+                break;
+            case ModeState.ROCKET: 
+                UpdateRocket();
+                Dead();
+                break;
         }
     }
 
@@ -77,11 +85,11 @@ public class PlayerMove : MonoBehaviour
     float rot = 0f;                 // jump에서 공중회전 각도 누적 변수
 
     public GameObject MotionCube;
-    CharacterController cc1;        // 자식Object CC1의 Charater Controller
-    CharacterController cc2;        // 자식Object CC2의 Charater Controller
 
     private void UpdateCube()
     {
+        SetMode();
+
         gravity = CubeGravity;       // Cube 모드일때 중력 적용
 
         // 0. MotionCube 활성화 && MotionRocket 비활성화
@@ -90,7 +98,7 @@ public class PlayerMove : MonoBehaviour
 
         // 1. 바닥과 접촉여부 검사
         // 1-1) 바닥과 접촉인 경우
-        if (cc0.isGrounded)
+        if (cc.isGrounded)
         {
             yVelocity = 0;      // 중력 누적 X
             jumpState = false;
@@ -123,10 +131,10 @@ public class PlayerMove : MonoBehaviour
         }
         dir.y = yVelocity;              // dir.y에 yVelocity 적용
 
-        // 3. cc0에 움직입 적용
-        cc0.Move(dir * moveSpeed * Time.deltaTime);
-        //cc1.Move(dir * moveSpeed * Time.deltaTime);
-        //cc2.Move(dir * moveSpeed * Time.deltaTime);
+        // 3. cc에 움직입 적용
+        preZpos = transform.position.z;
+        cc.Move(dir * moveSpeed * Time.deltaTime); // 움직임 적용하기 
+        currentZpos = transform.position.z;
 
     }
     // (Cube) jump시 MotinoCube 180도 회전 모션 함수
@@ -147,24 +155,23 @@ public class PlayerMove : MonoBehaviour
 
     // [Mode: Rocket일 때]
     // Player(Locket) 변수
-    public float RocketGravity = -5.0f;  // Rocket 모드의 중력  
-    public float upPower = 1.0f;         // space 누를 때, 위로 올라가는 힘
-    float angle = 0f;
+    public float RocketGravity = -2f;   // Rocket 모드의 중력  
+    public float upPower = 0.02f;       // space 누를 때, 위로 올라가는 힘
+    float angle = 0f;                   // dir과 Vector3.forward 사이의 각도
+    bool isContactAB = false;           // 위(Above), 아래(Below)와의 접촉여부(true=접촉/false=공중에 떠있는 상태)
 
     public GameObject MotionRocket;
 
     private void UpdateRocket()
     {
-        gravity = RocketGravity;        // RocketGravity 중력 적용
 
-        // 0. MotionCube 비활성화 && MotionRocket 활성화
-        //MotionCube.SetActive(false);  //MontionRocket Off & MotinCube On
-        //MotionRocket.SetActive(true);
+        // 중력적용
+        gravity = RocketGravity;                    // RocketGravity 중력을 gravity에 적용
 
         // 1. Rocket 모드의 dir 구하기
         yVelocity += gravity * Time.deltaTime;      // yVelocity에 garvity 누적 
         if (Input.GetKey(KeyCode.Space))            // space 입력 시, yVelocitydp jumpPower 누적하기(IPointerDownHandler, IPointerUpHandler 사용)
-        {
+        { 
             yVelocity += upPower;
         }
         dir.y = yVelocity;
@@ -172,16 +179,14 @@ public class PlayerMove : MonoBehaviour
 
         // 2. MotionRocket 방향 설정
         //  : dir벡터와 Vector3의 사이각을 구하여 MotionRocket이 진행방향에 따라 방향을 향하도록 설정
-        if ((cc0.collisionFlags & CollisionFlags.Below) != 0)
-        //if (cc0.isGrounded)
+        isContactAB = ((cc.collisionFlags & CollisionFlags.Below) != 0)     // cc의 위(Above), 아래(Below) 충돌 여부 검사
+                      || ((cc.collisionFlags & CollisionFlags.Above) != 0);
+        
+        if (isContactAB)                            // 천장 or 바닥에 접촉한 경우
         {
-            angle = Mathf.Lerp(0, angle, 0.9f);      // 자연스럽게 바닥에 착지하는 모션을 위한 선형보간
+            angle = Mathf.Lerp(0, angle, 0.7f);     // 자연스럽게 바닥에 착지하는 모션을 위한 선형보간
         }
-        else if ((cc0.collisionFlags & CollisionFlags.Above) != 0)
-        {
-            angle = Mathf.Lerp(0, angle, 0.9f);
-        }
-        else
+        else                                        // 공중에 위치한 경우
         {
             angle = Vector3.Angle(Vector3.forward, dir.normalized);
         }
@@ -195,17 +200,16 @@ public class PlayerMove : MonoBehaviour
         MotionRocket.transform.rotation = Quaternion.Euler(angle+90, 0 ,0);
 
         // 3. 움직임 적용
-        cc0.Move(dir * moveSpeed * Time.deltaTime); // 움직임 적용하기 
+        preZpos = transform.position.z;        
+        cc.Move(dir * moveSpeed * Time.deltaTime); // 움직임 적용하기 
+        currentZpos = transform.position.z;
+
+        // 4. Dead
+        //    : Player의 z좌표가 현재위치가 전위치보다 같거나 작으면 Dead
         
-
-
     }
 
-    // (공통) Player 죽음 
-    public void Dead()
-    {
-        Destroy(gameObject);
-    }
+
 
     // Vector 시각화 code
     private void OnDrawGizmos()

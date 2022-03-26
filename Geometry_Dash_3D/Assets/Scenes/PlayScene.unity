@@ -2429,7 +2429,7 @@ MonoBehaviour:
   turnSpeed: 500
   MotionCube: {fileID: 849753279}
   RocketGravity: -2
-  upPower: 0.03
+  upPower: 0.02
   MotionRocket: {fileID: 1340371209}
 --- !u!143 &1125308276
 CharacterController:
