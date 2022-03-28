@@ -59,6 +59,11 @@
     <Compile Include="Assets\Scripts\CameraMove.cs" />
     <Compile Include="Assets\Scripts\PlayerMove_Rig.cs" />
     <Compile Include="Assets\Scripts\PlayerMove.cs" />
+    <Compile Include="Assets\Scripts\Obsctacle.cs" />
+    <Compile Include="Assets\Scripts\ChangeToCube.cs" />
+    <Compile Include="Assets\Scripts\ChangeToRocket.cs" />
+    <Compile Include="Assets\Scripts\ChangeToRace.cs" />
+    <Compile Include="Assets\Scripts\ChangeToForward.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
