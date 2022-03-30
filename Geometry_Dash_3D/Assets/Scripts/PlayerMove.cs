@@ -85,10 +85,17 @@ public class PlayerMove : MonoBehaviour
         changeMode = true;
     }
     // (공통) Player 죽음 
+    public bool dead = false;               // daed 상태 표시 변수(true: 죽음)
     public void Dead()
     {
-        if (currentZpos <= preZpos)
-            SceneManager.LoadScene(0);
+        if (currentZpos <= preZpos)         // 벽에 부딪혔을 때 Dead
+            dead = true;
+
+        if(dead)
+        {
+            dead = false;
+            SceneManager.LoadScene(0);       // 다시시작
+        }
     }
 
     // Update is called once per frame
@@ -211,7 +218,7 @@ public class PlayerMove : MonoBehaviour
         // 중력적용
         gravity = RocketGravity;                    // RocketGravity 중력을 gravity에 적용
         // cc의 위(Above), 아래(Below) 충돌 여부 검사
-        isContactAB = ((cc.collisionFlags & CollisionFlags.Below) != 0)     
+        isContactAB = ((cc.collisionFlags & CollisionFlags.Below) != 0)
                       || ((cc.collisionFlags & CollisionFlags.Above) != 0);
         // 1. Rocket 모드의 dir 구하기
         yVelocity += gravity * Time.deltaTime;      // yVelocity에 garvity 누적 
@@ -228,7 +235,7 @@ public class PlayerMove : MonoBehaviour
 
         // 2. MotionRocket 방향 설정
         //  : dir벡터와 Vector3의 사이각을 구하여 MotionRocket이 진행방향에 따라 방향을 향하도록 설정
-        
+
 
         if (isContactAB)                            // 천장 or 바닥에 접촉한 경우
         {
