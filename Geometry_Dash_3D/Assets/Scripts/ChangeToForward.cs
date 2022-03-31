@@ -8,7 +8,8 @@ public class ChangeToForward : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            PlayerMove.Instance.Mode = PlayerMove.ModeState.FORWARD; 
+            PlayerMove.Instance.Mode = PlayerMove.ModeState.FORWARD;
+            PlayerMove.Instance.ChangeMode();
         }
     }
 }

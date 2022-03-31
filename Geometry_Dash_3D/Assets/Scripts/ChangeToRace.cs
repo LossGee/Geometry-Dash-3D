@@ -8,7 +8,8 @@ public class ChangeToRace : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            PlayerMove.Instance.Mode = PlayerMove.ModeState.RACE; 
+            PlayerMove.Instance.Mode = PlayerMove.ModeState.RACE;
+            PlayerMove.Instance.ChangeMode();
         }
     }
 }

@@ -8,7 +8,8 @@ public class ChangeToCube : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            PlayerMove.Instance.Mode = PlayerMove.ModeState.CUBE; 
+            PlayerMove.Instance.Mode = PlayerMove.ModeState.CUBE;
+            PlayerMove.Instance.ChangeMode();
         }
     }
 }

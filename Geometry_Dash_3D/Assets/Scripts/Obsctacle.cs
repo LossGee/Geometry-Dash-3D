@@ -16,7 +16,7 @@ public class Obsctacle : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            PlayerMove.Instance.dead = true;
+            PlayerMove.Instance.CrashObstacle();
             PlayerMove.Instance.Dead();
         }
     }

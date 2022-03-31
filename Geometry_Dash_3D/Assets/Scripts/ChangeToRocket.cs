@@ -8,7 +8,8 @@ public class ChangeToRocket : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            PlayerMove.Instance.Mode = PlayerMove.ModeState.ROCKET; 
+            PlayerMove.Instance.Mode = PlayerMove.ModeState.ROCKET;
+            PlayerMove.Instance.ChangeMode();
         }
     }
 }
