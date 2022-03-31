@@ -324,7 +324,7 @@ public class PlayerMove : MonoBehaviour
     // (UFO) jump시 UFO Motino 기울기 변화 모션
     void UFOMotion()
     {
-        angle = Vector3.Angle(Vector3.forward, dir);
+        angle = Vector3.Angle(Vector3.forward, dir) / 3;
         if (dir.y >= 0)
         {
             MotionUFO.transform.rotation = Quaternion.Euler(angle, 0, 0);

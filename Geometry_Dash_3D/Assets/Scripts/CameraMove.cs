@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class CameraMove : MonoBehaviour
 {
-    // 카메라 앵글(position, rotation 정보까지 넣어두기 
-    GameObject RightSideAnlge;
-    GameObject LeftSideAngle;
-    GameObject RaceAngle;
-
+    // 카메라 앵글 좌표(position, rotation 정보까지 넣어두기 
+    public GameObject RightSideAnlge;      // [Cube, UFO] default 
+    public GameObject LeftSideAngle;       // [Cube, UFO] 좌우반전
+    public GameObject RocketAngle;         // [Rocket] defualt (Cube위치에서 x축 +방향으로 증가, 넓은 시야)
+    public GameObject RaceAngle;           // [Race] default
+    public GameObject ForwardAngle;        // [Forward] default
+    
+    // Position 좌표 
     float xPos;
     float yPos;
     float zPos;
