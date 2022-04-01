@@ -32,6 +32,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject MotionRace;
     public GameObject MotionRocket;
     public GameObject MotionForward;
+    public float cubeTurnSpeed = 500f;      // 회전 모션 속도
 
     // 중력(gravity) 관련 변수
     float gravity = -9.8f;
@@ -50,7 +51,13 @@ public class PlayerMove : MonoBehaviour
     // y축 +방향으로 가해지는 힘에 관련된 변수
     public float cubeJumpPower = 2f;        // (Cube) jump power
     public float ufoJumpPower = 2f;         // (UFO) jump power
-    public float rocketUpPower = 0.02f;           // (Rocket) space 누를 때, 위로 올라가는 힘
+    public float rocketUpPower = 0.02f;     // (Rocket) space 누를 때, 위로 올라가는 힘
+    public float powerJumpPower = 2.2f;          // PowerJump Object에 접촉했을 때의 jump power
+    public float airJumpPower = 2f;
+
+    // PowerJump, AirJump 관련 변수
+    bool isContactPowerJump = false;        // PowerJump와 접촉했을 때 상태를 나타냄(true: 접촉, fasle: 접촉X)
+    bool isContactAirJump = false;          // AirJump와 접촉했을 때 상태를 나타냄(true: 접촉, flase: 접촉X)
 
     // x축 방향으로 가해지는 힘에 관련된 변수
     public float RaceSidemoveSpeed = 3f;    // (Race) 좌우방향 이동 속도
@@ -61,6 +68,10 @@ public class PlayerMove : MonoBehaviour
     float currentZpos;                      // Move 이후 z좌표
     float angle = 0f;                       // dir과 Vector3.forward 사이의 각도
     bool isContactAB = false;               // 위(Above), 아래(Below)와의 접촉여부(true=접촉/false=공중에 떠있는 상태)
+
+    // 반전포탈 관련 변수 
+    public bool reverseLeftRight = false;          // 좌우반전여부(true: LeftSideAngle, false: RightSide Angle)
+    public bool reverseGravity = false;            // 중력반전여부(true: 중력적용 , false: reverse)
 
     Vector3 dir;
     CharacterController cc;
@@ -123,27 +134,27 @@ public class PlayerMove : MonoBehaviour
         }
     }
     // (공통) SetVar: 모드별 각 변수값 설정 [중력(gravity), 진행속도(Speed), 
-    void SetVar()
-    {
-        switch (Mode)
-        {
-            case ModeState.CUBE:
+    //void SetVar()
+    //{
+    //    switch (Mode)
+    //    {
+    //        case ModeState.CUBE:
 
-                break;
-            case ModeState.UFO:
+    //            break;
+    //        case ModeState.UFO:
 
-                break;
-            case ModeState.RACE:
+    //            break;
+    //        case ModeState.RACE:
 
-                break;
-            case ModeState.ROCKET:
+    //            break;
+    //        case ModeState.ROCKET:
 
-                break;
-            case ModeState.FORWARD:
+    //            break;
+    //        case ModeState.FORWARD:
 
-                break;
-        }
-    }
+    //            break;
+    //    }
+    //}
 
     // (공통) 장애물 충돌시 dead true 처리
     bool dead = false;               // daed 상태 표시 변수(true: 죽음)
@@ -164,48 +175,48 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    // (공통) PowerJump Interaction과 접촉했을 때, isContactPowerJump를 true로 바꿔주는 함수
+    public void ContactPowerJump()
+    {
+        isContactPowerJump = true;
+    }
+    // (공통) AirJump Interaction과 접촉했을 때, isContactAirJump를 true로 바꿔주는 함수
+    public void OnAirJump()
+    {
+        isContactAirJump = true;
+    }
+    public void OffAirJump()
+    {
+        isContactAirJump = false;
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (changeMode)
         {
-            SetMotion();            // Mode별 Mode 담당 GameObject 활성화
-            SetVar();               // Mode별 변수(variable) 설정
+            SetMotion();                        // Mode별 Mode 담당 GameObject 활성화
+            //SetVar();                           // Mode별 변수(variable) 설정
             changeMode = false;
         }
 
         switch (Mode)
         {
-            case ModeState.CUBE:
-                UpdateCube();
-                Dead();
-                break;
-            case ModeState.UFO:
-                UpdateUFO();
-                Dead();
-                break;
-            case ModeState.RACE:
-                UpdateRace();
-                Dead();
-                break;
-            case ModeState.ROCKET:
-                UpdateRocket();
-                Dead();
-                break;
-            case ModeState.FORWARD:
-                UpdateForward();
-                Dead();
-                break;
+            case ModeState.CUBE:UpdateCube(); break;
+            case ModeState.UFO:UpdateUFO(); break;
+            case ModeState.RACE:UpdateRace(); break;
+            case ModeState.ROCKET:UpdateRocket(); break;
+            case ModeState.FORWARD:UpdateForward(); break;
         }
+        Dead();
     }
 
     // [Mode: Cube일 때]
     // Player(Cube) 변수
-    bool jumpState = false;         // jump 상태(ture: 점프중 // false: 점프X) - 이단 점프 방지
-    bool jumpTurn = true;           // jump시 회전을 180도로 제한하기 위한 변수
-    bool dropTurn = true;           // drop시 회전을 90도로 제한하기 위한 변수
-    public float cubeTurnSpeed = 500f;  // 회전 모션 속도
-    float rot = 0f;                 // jump에서 공중회전 각도 누적 변수
+    bool jumpState = false;             // jump 상태(ture: 점프중 // false: 점프X) - 이단 점프 방지
+    bool jumpTurn = true;               // jump시 회전을 180도로 제한하기 위한 변수
+    bool dropTurn = true;               // drop시 회전을 90도로 제한하기 위한 변수
+    float rot = 0f;                     // jump에서 공중회전 각도 누적 변수
 
     private void UpdateCube()
     {
@@ -242,10 +253,18 @@ public class PlayerMove : MonoBehaviour
 
         // 2. jump 기능 구현
         // : space키 입력 && 점프하고 있는 상황이 아니라면
-        if (Input.GetButtonDown("Jump") && !jumpState)
+        if (isContactPowerJump)
+        {
+            PowerJump();
+        }
+        else if (Input.GetButtonDown("Jump") && !jumpState)
         {
             jumpState = true;
             yVelocity = cubeJumpPower;      // yVeleocity에 cubeJumpPower 적용
+        }
+        if (isContactAirJump)
+        {
+            AirJump();
         }
         dir.y = yVelocity;              // dir.y에 yVelocity 적용
 
@@ -259,9 +278,15 @@ public class PlayerMove : MonoBehaviour
     void JumpTurn()
     {
         rot += cubeTurnSpeed * Time.deltaTime;
-        rot += cubeTurnSpeed * Time.deltaTime;
-        if (rot < 180) MotionCube.transform.rotation = Quaternion.Euler(rot, 0, 0);
-        else jumpTurn = true;
+        if (rot < 180)
+        {
+            MotionCube.transform.rotation = Quaternion.Euler(rot, 0, 0);
+        }
+        else
+        { 
+            jumpTurn = true;
+            MotionCube.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
     }
     // (Cube) drop시 MotinoCube 90도 회전 모션 함수
     void DropTurn()
@@ -271,15 +296,22 @@ public class PlayerMove : MonoBehaviour
         else dropTurn = true;
     }
 
-    // (Cube & UFO) 파워점프대를 만났을 때, 보통 점프보다 1.5배 높이로 점프한다. 
+    // (CUBE & UFO & RACE) 파워점프대를 만났을 때, 보통 점프보다 1.5배 높이로 점프한다. 
     void PowerJump()
     {
-
+        jumpState = true;
+        yVelocity = powerJumpPower;
+        isContactPowerJump = false;
     }
     // (Cube & UFO) 공중 점프 Intaraction과 접촉했을 때, 2단 점프 허용
     void AirJump()
     {
-
+        if (Input.GetButtonDown("Jump") && jumpState)
+        {
+            jumpTurn = false;
+            yVelocity = airJumpPower;
+            rot = 0;
+        }
     }
     // (Cube & UFO) 중력 반전 Potal과 접촉했을 때, 중력반전 
     void ReversGravity()
@@ -298,6 +330,8 @@ public class PlayerMove : MonoBehaviour
         // cc의 위(Above), 아래(Below) 충돌 여부 검사
         isContactAB = ((cc.collisionFlags & CollisionFlags.Above) != 0)
                       || ((cc.collisionFlags & CollisionFlags.Below) != 0);
+        //isYposChange = 
+        
         // 1-1) 바닥(Below)과 접촉한 경우 
         if (((cc.collisionFlags & CollisionFlags.Below) != 0))
         {
@@ -306,6 +340,12 @@ public class PlayerMove : MonoBehaviour
         yVelocity += gravity * Time.deltaTime;
 
         // 2. jump 기능 구현
+        // 2-1) PowereJump 발판을 밟았을 때
+        if (isContactPowerJump)
+        {
+            PowerJump();
+        }
+        // 2-2) Space 키를 입력했을 때 (공중 연속점프 가능)
         if (Input.GetKeyDown(KeyCode.Space) 
             && ((cc.collisionFlags & CollisionFlags.Above) == 0))
         {
@@ -333,13 +373,17 @@ public class PlayerMove : MonoBehaviour
 
 
     // [Mode: Race일 때]
-
     private void UpdateRace()
     {
         // 중력적용
         gravity = RaceGravity;
 
         // 1. Race 모드에서의 dir 정하기
+        // 0) PowerJump 접촉 여부 확인 및 실행
+        if (isContactPowerJump)
+        {
+            PowerJump();
+        }
         // 1) 방향키에 따른 좌우 이동
         if (Input.GetKey(KeyCode.LeftArrow))
         {

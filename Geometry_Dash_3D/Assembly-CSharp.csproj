@@ -60,11 +60,13 @@
     <Compile Include="Assets\Scripts\CameraMove.cs" />
     <Compile Include="Assets\Scripts\ChangeToForward.cs" />
     <Compile Include="Assets\Scripts\PlayerMove_Rig.cs" />
+    <Compile Include="Assets\Scripts\ChangeToUFO.cs" />
     <Compile Include="Assets\Scripts\PlayerMove.cs" />
     <Compile Include="Assets\Scripts\ChangeToCube.cs" />
     <Compile Include="Assets\Scripts\ChangeToRace.cs" />
     <Compile Include="Assets\Scripts\ChangeToRocket.cs" />
-    <Compile Include="Assets\Scripts\ChangeToUFO.cs" />
+    <Compile Include="Assets\Scripts\PowerJump.cs" />
+    <Compile Include="Assets\Scripts\AirJump.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
