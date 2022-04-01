@@ -69,9 +69,9 @@ public class PlayerMove : MonoBehaviour
     float angle = 0f;                       // dir과 Vector3.forward 사이의 각도
     bool isContactAB = false;               // 위(Above), 아래(Below)와의 접촉여부(true=접촉/false=공중에 떠있는 상태)
 
-    // 반전포탈 관련 변수 
-    public bool reverseLeftRight = false;          // 좌우반전여부(true: LeftSideAngle, false: RightSide Angle)
+    // 반전포탈 관련 변수
     public bool reverseGravity = false;            // 중력반전여부(true: 중력적용 , false: reverse)
+    
 
     Vector3 dir;
     CharacterController cc;
@@ -316,7 +316,7 @@ public class PlayerMove : MonoBehaviour
     // (Cube & UFO) 중력 반전 Potal과 접촉했을 때, 중력반전 
     void ReversGravity()
     {
-
+        
     }
 
 

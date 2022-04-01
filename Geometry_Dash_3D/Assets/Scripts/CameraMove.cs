@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class CameraMove : MonoBehaviour
 {
+    public static CameraMove Instance;
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // 카메라 앵글 좌표(position, rotation 정보까지 넣어두기 
     GameObject nowAngle;
@@ -12,10 +17,13 @@ public class CameraMove : MonoBehaviour
     public GameObject RaceAngle;           // [Race] default
     public GameObject ForwardAngle;        // [Forward] default
 
+    // 좌우반전 앵글 관련 변수
+    public bool reverseLeftRight = false;  // 좌우반전여부(true: LeftSideAngle, false: RightSide Angle)
+
     // Position 좌표
-    float xPos;
-    float yPos;
-    float zPos;
+    //float xPos;
+    //float yPos;
+    //float zPos;
 
     Vector3 pos;
     Quaternion rot;
@@ -36,12 +44,17 @@ public class CameraMove : MonoBehaviour
         }
     }
 
+    public void ReverseSide()
+    {
+        reverseLeftRight = !reverseLeftRight;
+    }
+
     void Update()
     {
         // (ver2) Player 하위의 ~Angle로 이름 지어진 Object들로 카메라 위치 바꾸기 
         // 1. Mode에 따라 nowAngle 설정 
         SetDefaultMode();
-        if (nowAngle == RightSideAnlge && PlayerMove.Instance.reverseLeftRight)
+        if (nowAngle == RightSideAnlge && reverseLeftRight)
         {
             nowAngle = LeftSideAngle;
         }
@@ -51,8 +64,8 @@ public class CameraMove : MonoBehaviour
         rot = nowAngle.transform.rotation;
 
         // 3. Camera 이동
-        transform.position = pos;
-        transform.rotation = rot;
+        transform.position = Vector3.Lerp(transform.position, pos, 0.1f);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rot, 0.1f);
 
 
         /* (ver1) 카메라 앵글을 코드로 직접 설정      
