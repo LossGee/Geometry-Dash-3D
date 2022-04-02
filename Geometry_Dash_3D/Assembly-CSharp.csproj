@@ -62,12 +62,15 @@
     <Compile Include="Assets\Scripts\PlayerMove_Rig.cs" />
     <Compile Include="Assets\Scripts\AirJump.cs" />
     <Compile Include="Assets\Scripts\ChangeToUFO.cs" />
+    <Compile Include="Assets\Scripts\ReverseSidePotal.cs" />
     <Compile Include="Assets\Scripts\PlayerMove.cs" />
     <Compile Include="Assets\Scripts\ChangeToCube.cs" />
     <Compile Include="Assets\Scripts\PowerJump.cs" />
     <Compile Include="Assets\Scripts\ChangeToRace.cs" />
     <Compile Include="Assets\Scripts\ChangeToRocket.cs" />
-    <Compile Include="Assets\Scripts\ReverseSidePotal.cs" />
+    <Compile Include="Assets\Scripts\ChangeToSatelliteVertical.cs" />
+    <Compile Include="Assets\Scripts\ChangeToSatelliteHorizontal.cs" />
+    <Compile Include="Assets\Scripts\RaceLine.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

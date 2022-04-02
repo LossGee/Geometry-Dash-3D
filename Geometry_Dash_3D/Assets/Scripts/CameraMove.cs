@@ -10,12 +10,16 @@ public class CameraMove : MonoBehaviour
         Instance = this;
     }
 
+    // 카메라 전환 속도 (0 ~ 1 사이 설정 가능)
+    public float angleChangeSpeed = 0.01f;
+
     // 카메라 앵글 좌표(position, rotation 정보까지 넣어두기 
     GameObject nowAngle;
-    public GameObject RightSideAnlge;      // [Cube, UFO, Rocket] default 
-    public GameObject LeftSideAngle;       // [Cube, UFO, Rocket] 좌우반전
-    public GameObject RaceAngle;           // [Race] default
-    public GameObject ForwardAngle;        // [Forward] default
+    public GameObject RightSideAnlge;           // [Cube, UFO, Rocket] default 
+    public GameObject LeftSideAngle;            // [Cube, UFO, Rocket] 좌우반전
+    public GameObject RaceAngle;                // [Race] default
+    public GameObject ForwardAngle;             // [Forward] default
+    public GameObject Satellite_Horizontal;     // [Forward] default
 
     // 좌우반전 앵글 관련 변수
     public bool reverseLeftRight = false;  // 좌우반전여부(true: LeftSideAngle, false: RightSide Angle)
@@ -34,6 +38,9 @@ public class CameraMove : MonoBehaviour
         {
             case PlayerMove.ModeState.RACE:
                 nowAngle = RaceAngle;
+                break;
+            case PlayerMove.ModeState.SATELLITE_horizontal:
+                nowAngle = Satellite_Horizontal;
                 break;
             case PlayerMove.ModeState.FORWARD:
                 nowAngle = ForwardAngle;
@@ -64,8 +71,8 @@ public class CameraMove : MonoBehaviour
         rot = nowAngle.transform.rotation;
 
         // 3. Camera 이동
-        transform.position = Vector3.Lerp(transform.position, pos, 0.1f);
-        transform.rotation = Quaternion.Lerp(transform.rotation, rot, 0.1f);
+        transform.position = Vector3.Lerp(transform.position, pos, angleChangeSpeed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rot, angleChangeSpeed);
 
 
         /* (ver1) 카메라 앵글을 코드로 직접 설정      
