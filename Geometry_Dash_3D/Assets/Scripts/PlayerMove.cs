@@ -39,7 +39,6 @@ public class PlayerMove : MonoBehaviour
     // 중력(gravity) 관련 변수
     float gravity = -9.8f;
     public float DefaultGravity = -9.8f;                 // Cube, UFO 모드의 중력
-    public float RaceGravity = -9.8f;                    // Race 모드의 중력
     public float RocketGravity = -2f;                    // Rocket 모드의 중력  
 
     // 진행방향으로 움직이는 속도(moveSpeed) 
@@ -60,7 +59,6 @@ public class PlayerMove : MonoBehaviour
     float jumpPower = 2f;
     public float cubeJumpPower = 2f;                     // (Cube) jump power 
     public float ufoJumpPower = 2f;                      // (UFO) jump power
-    public float raceJumpPower = 2f;
     public float rocketUpPower = 0.02f;                  // (Rocket) space 누를 때, 위로 올라가는 힘
     public float powerJumpPower = 2.2f;                  // PowerJump Object와 접촉했을 때의 jumpPower
     public float airJumpPower = 2f;                      // AireJump object와 접촉헀을 때의 jumpPower
@@ -209,7 +207,6 @@ public class PlayerMove : MonoBehaviour
             case ModeState.RACE:
                 gravity = DefaultGravity;
                 moveSpeed = raceMoveSpeed;
-                jumpPower = raceJumpPower;
                 CheckLineNumber();
                 break;
             case ModeState.SATELLITE_vertical:

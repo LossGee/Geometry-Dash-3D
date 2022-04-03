@@ -1312,7 +1312,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh17344
+  m_Name: pb_Mesh17338
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -1806,7 +1806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dab7e90ba54a2f4790edee32a00a23e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Mode: 0
+  Mode: 2
   MotionCube: {fileID: 849753279}
   MotionUFO: {fileID: 75105267}
   MotionRace: {fileID: 11454234}
@@ -1814,7 +1814,6 @@ MonoBehaviour:
   MotionRocket: {fileID: 1340371209}
   MotionForward: {fileID: 816773580}
   DefaultGravity: -9.8
-  RaceGravity: -9.8
   RocketGravity: -2
   cubeMoveSpeed: 20
   ufoMoveSpeed: 20
@@ -1827,7 +1826,6 @@ MonoBehaviour:
   cubeTurnSpeed: 500
   cubeJumpPower: 2
   ufoJumpPower: 2
-  raceJumpPower: 2
   rocketUpPower: 0.02
   powerJumpPower: 2.2
   airJumpPower: 2.2
@@ -1858,7 +1856,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1125308274}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 8.13, z: 0}
+  m_LocalPosition: {x: 0, y: 9.5, z: -0.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 849753280}
@@ -5666,7 +5664,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh17554
+  m_Name: pb_Mesh17482
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
