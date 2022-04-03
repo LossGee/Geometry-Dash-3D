@@ -71,19 +71,25 @@ public class PlayerMove : MonoBehaviour
 
     // 공통 변수                                         
     float yVelocity = 0f;                                // dir의 y축 방향 velocity(gravity, jumPower 작용이 결과)
-    float preZpos;                                       // Move 이전 z좌표 (Dead 검출에 활용)    
-    float currentZpos;                                   // Move 이후 z좌표 (Dead 검출에 활용)
     float angle = 0f;                                    // dir과 Vector3.forward 사이의 각도
     bool isContactAB = false;                            // 위(Above), 아래(Below)와의 접촉여부(true=접촉/false=공중에 떠있는 상태)
     bool isContactSides = false;                         // 좌우 접촉여부(true=접촉/flase=접촉X)
 
     // 반전포탈 관련 변수
-    public bool reverseGravity = false;                  // 중력반전여부(true: 중력적용 , false: reverse)
+    public bool reversGravityState = false;              // 중력 반전 여부(true: 역중력(reverse Gravity) , false: 중력(noraml Gravity)
 
-    // RACE 모드의 이동좌표 관련 변수(x위치 고정, RacePos0~3)
-    int Linenumber = 1;
-    public GameObject[] racePos = new GameObject[4];     // Race Line 4
-    Transform nowPos;                                    // 현재 Player가 위치한 Line의 위치
+    // X,Y,Z 좌표 변화 감지를 위한 변수
+    bool isChangeYpos;
+    float currentXpos;
+    float preYpos = 0;
+    float currentYpos = 0;
+    float preZpos;                                       // Move 이전 z좌표 (Dead 검출에 활용)    
+    float currentZpos;                                   // Move 이후 z좌표 (Dead 검출에 활용)
+
+    // RACE 모드의 X축 이동좌표 관련 변수(x위치를 Line별로 고정)
+    int LineNumber = 1;
+    float posX;
+    float nextXpos;
 
     // dir, move의 대상이 되는 변수 모음
     Vector3 dir;
@@ -204,8 +210,7 @@ public class PlayerMove : MonoBehaviour
                 gravity = DefaultGravity;
                 moveSpeed = raceMoveSpeed;
                 jumpPower = raceJumpPower;
-                nowPos = transform;
-                SetRaceLine();
+                CheckLineNumber();
                 break;
             case ModeState.SATELLITE_vertical:
                 SATELLITE_verticalUpDownState = true;
@@ -271,6 +276,7 @@ public class PlayerMove : MonoBehaviour
 
 
     // [Mode: Cube]
+    // [Mode: Cube]
     // Player(Cube) 변수
     bool jumpState = false;                               // jump 상태(ture: 점프중, false: 점프X) - 이단 점프 방지
     bool jumpTurn = true;                                 // jump시 회전을 180도로 제한하기 위한 변수
@@ -323,7 +329,7 @@ public class PlayerMove : MonoBehaviour
         {
             AirJump();
         }
-        dir.y = yVelocity;                                  // dir.y에 yVelocity 적용
+        dir.y = yVelocity;                                  // dir.y에 yVelocity 적용 
 
         // 3. cc에 움직입 적용(Move 이전,이후 z좌표를 조사해서 변화 X시 Dead실행)
         preZpos = transform.position.z;
@@ -365,6 +371,198 @@ public class PlayerMove : MonoBehaviour
             yVelocity = airJumpPower;
         }
     }
+
+    // ----<Mode: Cube - 중력반전 기능 넣고 망가진 부분;; 강사님께 질문드릴것>----W
+    /*
+        // Player(Cube) 변수
+        public bool jumpState = false;                               // jump 상태(ture: 점프중, false: 점프X) - 이단 점프 방지
+        public bool jumpTurn = true;                                 // jump시 회전을 180도로 제한하기 위한 변수
+        public bool dropTurn = true;                                 // drop시 회전을 90도로 제한하기 위한 변수
+        public float rot = 0f;                                       // jump에서 공중회전 각도 누적 변수
+        private void UpdateCube()
+        {
+            *//*
+            // 1. 천장 or 바닥과 접촉여부 검사(상하중력 전환인 경우 포함)
+            isChangeYpos = (preYpos != currentYpos) ? true : false;
+            print(isChangeYpos);
+            // 1-1) 바닥과 접촉인 경우
+            if (!isChangeYpos)
+            {
+                yVelocity = 0;                                  // 천장or바닥에 붙어있을 경우 중력 누적 X
+                jumpState = false;
+                jumpTurn = false;
+                dropTurn = false;
+                rot = 0;
+                MotionCube.transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+            // 1-2) 바닥과 접촉하지 않은 경우(MotionCube 움직임 정의)
+            else
+            {
+                if (!jumpState)
+                {
+                    if (!dropTurn)
+                    {
+                        DropTurn();                             // 낙하시, MotionCube 90도 회전
+                    }
+                }
+                else
+                {
+                    JumpTurn();
+                }
+            }
+            yVelocity += gravity * Time.deltaTime;             // yVelocity에 중력 적용
+
+            // 2. jump 기능 구현
+            // 2-1) Normal JUMP: 사용자로부터 space키를 눌러을 때
+            if (Input.GetKeyDown(KeyCode.Space) && !jumpState)
+            {
+                jumpState = true;
+                yVelocity = jumpPower;                          // yVeleocity에 cubeJumpPower 적용
+            }
+            // 2-2) POWER JUMP: Player가 powerjump Object 만났을 때
+            if (isContactPowerJump)
+            {
+                jumpState = true;
+                PowerJump();
+            }
+            // 2-3) AIR JUMP: Player가 jump 중에 Air jump Object와 접촉한 상태에서 space를 눌렀을 때
+            if (isContactAirJump)
+            {
+                jumpTurn = false;
+                AirJump();
+            }
+
+            // 3. dir에 yVelocity 적용
+            if (reversGravityState)
+            {
+                dir.y = -yVelocity;
+            }
+            // 3-2) normal Gravity
+            else
+            {
+                dir.y = yVelocity;                               // dir.y에 yVelocity 적용
+            }
+
+            // 4. cc에 움직입 적용(Move 이전,이후 z좌표를 조사해서 변화 X시 Dead실행)
+            preYpos = transform.position.y;
+            preZpos = transform.position.z;
+            cc.Move(dir * moveSpeed * Time.deltaTime);          // 움직임 적용하기 
+            //print(dir * moveSpeed * Time.deltaTime);
+            currentYpos = transform.position.y;
+            currentZpos = transform.position.z;
+            *//*
+
+
+            // 1. 천장 or 바닥과 접촉여부 검사(상하중력 전환인 경우 포함)
+            // cc의 위(Above), 아래(Below) 충돌 여부 검사(ture: 공중, false: 지면)
+            isContactAB = ((cc.collisionFlags & CollisionFlags.Above) != 0)
+                          || ((cc.collisionFlags & CollisionFlags.Below) != 0);
+            // 1-1) 바닥과 접촉인 경우
+            if (isContactAB)
+            {
+                yVelocity = 0;                                  // 천장or바닥에 붙어있을 경우 중력 누적 X
+                jumpState = false;
+                jumpTurn = false;
+                dropTurn = false;
+                rot = 0;
+                MotionCube.transform.rotation = Quaternion.Euler(0, 0, 0);      //  바닥에 닿아있을 때는 rotation 고정
+            }
+            // 1-2) 바닥과 접촉하지 않은 경우(MotionCube 움직임 정의)
+            else
+            {
+                yVelocity += gravity * Time.deltaTime;          // yVelocity에 중력 적용
+                if (!jumpState)
+                {
+                    if (!dropTurn)
+                    {
+                        DropTurn();                                 // 낙하시, MotionCube 90도 회전
+                    }
+                }
+                else
+                {
+                    JumpTurn();
+                }
+            }
+
+            // 2. jump 기능 구현
+            // 2-1) Normal JUMP: 사용자로부터 space키를 눌러을 때
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                jumpState = true;
+                yVelocity = jumpPower;                          // yVeleocity에 cubeJumpPower 적용
+                isContactAB = false;
+            }
+            // 2-2) POWER JUMP: Player가 powerjump Object 만났을 때
+            if (isContactPowerJump)
+            {
+                jumpState = true;
+                PowerJump();
+            }
+            // 2-3) AIR JUMP: Player가 jump 중에 Air jump Object와 접촉한 상태에서 space를 눌렀을 때
+            if (isContactAirJump)
+            {
+                jumpTurn = false;
+                AirJump();
+            }
+            dir.y = -yVelocity;
+
+            // 3. dir에 yVelocity 적용
+            // 3-1) reverse Gravity
+            //if (reversGravityState)
+            //{
+            //    dir.y = -yVelocity;
+            //}
+            //// 3-2) normal Gravity
+            //else
+            //{
+            //    dir.y = yVelocity;                               // dir.y에 yVelocity 적용
+            //}
+            print("isConatactAB: " + isContactAB);
+            print("yVelocity: " + yVelocity + ",gravity: " + gravity*Time.deltaTime + ",jumpPower: " + jumpPower);
+
+            // 4. cc에 움직입 적용(Move 이전,이후 z좌표를 조사해서 변화 X시 Dead실행)
+            preZpos = transform.position.z;
+            cc.Move(dir * moveSpeed * Time.deltaTime);          // 움직임 적용하기 
+            //print(dir * moveSpeed * Time.deltaTime);
+            currentZpos = transform.position.z;
+
+
+        }
+        // (Cube) jump시 MotinoCube 180도 회전 모션 함수
+        void JumpTurn()
+        {
+            rot += cubeTurnSpeed * Time.deltaTime;
+            if (rot < 180)
+            {
+                MotionCube.transform.rotation = Quaternion.Euler(rot, 0, 0);
+            }
+            else
+            {
+                MotionCube.transform.rotation = Quaternion.Euler(0, 0, 0);
+                jumpTurn = true;
+            }
+        }
+        // (Cube) drop시 MotinoCube 90도 회전 모션 함수
+        void DropTurn()
+        {
+            rot += cubeTurnSpeed * Time.deltaTime;
+            if (rot < 90) MotionCube.transform.rotation = Quaternion.Euler(rot, 0, 0);
+        }
+        // (Cube & RACE) 공중 점프 Intaraction과 접촉했을 때, 2단 점프 허용
+        void AirJump()
+        {
+            if (Input.GetButtonDown("Jump") && jumpState)
+            {
+                if (Mode == ModeState.CUBE)
+                {
+                    rot = 0;
+                }
+                yVelocity = airJumpPower;
+            }
+        }
+    */
+    // ----접근금지 Line<Mode: Cube - 중력반전 기능 넣고 망가진 부분;; 강사님께 질문드릴것>----
+
     // (Cube & Race) AirJump Interaction과 접촉했을 때, isContactAirJump를 true로 바꿔주는 함수
     public void OnAirJump()
     {
@@ -378,7 +576,6 @@ public class PlayerMove : MonoBehaviour
     // (CUBE & UFO & RACE) 파워점프대를 만났을 때, 보통 점프보다 1.5배 높이로 점프한다. 
     void PowerJump()
     {
-        jumpState = true;
         yVelocity = powerJumpPower;
         isContactPowerJump = false;
     }
@@ -387,12 +584,22 @@ public class PlayerMove : MonoBehaviour
     {
         isContactPowerJump = true;
     }
-    // 
-
-    // (Cube & UFO & Race) 중력반전 실행
-    void ReversGravity()
+    // (ube & UFO & Race & Satellite & Rocket) 중력반전 포탈에 접촉했을 때 중력반전상태(ReversGravityState)를 반전시켜주는 함수
+    public void ChangeReverseGravityState()
     {
-
+        reversGravityState = !reversGravityState;
+    }
+    // (Cube & UFO & Race & Satellite & Rocket) 중력반전 실행
+    void ReverseGravity()
+    {
+        if (reversGravityState)
+        {
+            dir.y = -yVelocity;
+        }
+        else
+        {
+            dir.y = yVelocity;
+        }
     }
 
 
@@ -400,15 +607,15 @@ public class PlayerMove : MonoBehaviour
     private void UpdateUFO()
     {
         // 1. 천장(Above)과 바닥(Below) 접촉여부 검사
-        // cc의 위(Above), 아래(Below) 충돌 여부 검사
-        isContactAB = ((cc.collisionFlags & CollisionFlags.Above) != 0)
-                      || ((cc.collisionFlags & CollisionFlags.Below) != 0);
+        // y축 좌표 변환이 있는지 검사
+        isChangeYpos = (preYpos != currentYpos) ? true : false;
         // 1-1) 바닥(Below)과 접촉한 경우 
-        if (((cc.collisionFlags & CollisionFlags.Below) != 0))
+        if (!isChangeYpos)
         {
             yVelocity = 0;
         }
         yVelocity += gravity * Time.deltaTime;
+
         // 2. jump 기능 구현
         // 2-1) PowereJump 발판을 밟았을 때
         if (isContactPowerJump)
@@ -421,12 +628,16 @@ public class PlayerMove : MonoBehaviour
         {
             yVelocity = ufoJumpPower;
         }
-        dir.y = yVelocity;
+        ReverseGravity();
+
         // 3. Motion 적용 
         UFOMotion();
+
         // 4. 움직임 적용 
+        preYpos = transform.position.y;
         preZpos = transform.position.z;
         cc.Move(dir * moveSpeed * Time.deltaTime);          // 움직임 적용하기 
+        currentYpos = transform.position.y;
         currentZpos = transform.position.z;
     }
     // (UFO) jump시 UFO Motino 기울기 변화 모션
@@ -447,22 +658,26 @@ public class PlayerMove : MonoBehaviour
 
         // 1. Race 모드에서의 dir 정하기(Line 위치로 제어하기) 
         // 1) 방향키 입력에 따른 Line(racePos) 이동
+        // 사용자 좌우 방향키 입력
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if (Linenumber > 0)
+            if (LineNumber > 0)
             {
-                Linenumber--;
+                LineNumber--;
             }
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (Linenumber < 3)
+            if (LineNumber < 3)
             {
-                Linenumber++;
+                LineNumber++;
             }
         }
-        print(Linenumber);
-        dir.x = racePos[Linenumber].transform.position.x - nowPos.transform.position.x;
+        // LineNumber에 따른 Player의 dir.x 설정
+        currentXpos = transform.position.x;                // 현재 위치에서의 x좌표 구하기
+        nextXpos = SetRaceLine(LineNumber);                // 다음 RaceLine의 x좌표 구하기 
+        dir.x = nextXpos - currentXpos;                    // dir.x = 현재위치에서의 x좌표 - 다음 Line의 x좌표
+
         //  2) 중력 적용
         // 천장or지면과 접촉여부 확인 및 yVelocity 적용
         isContactAB = ((cc.collisionFlags & CollisionFlags.Above) != 0)
@@ -475,13 +690,13 @@ public class PlayerMove : MonoBehaviour
         {
             yVelocity += gravity * Time.deltaTime;
         }
-        dir.y = yVelocity;
-
         // PowerJump 접촉 여부 확인 및 실행
         if (isContactPowerJump)
         {
             PowerJump();
         }
+        // reversGravityState에 따른 중력 방향 전환
+        ReverseGravity();
 
         //  3) 모션 적용
         RaceMotion();
@@ -499,31 +714,42 @@ public class PlayerMove : MonoBehaviour
         {
             angle = -angle;
         }
-        MotionRace.transform.rotation = Quaternion.Euler(-90, -90, -90);
+        Quaternion next = Quaternion.Euler(-90, -90 - angle, -90);
+        MotionRace.transform.rotation = Quaternion.Lerp(MotionRace.transform.rotation, next, 0.1f);
     }
     // (Race) 현재위치에 따라 어느 Race Line에 있는지 검사
-    private void SetRaceLine()
+    private void CheckLineNumber()
     {
-        float posX = nowPos.position.x;
-
         if ((posX >= -4.8f) && (posX < -2.4f))
         {
-            Linenumber = 0;
+            LineNumber = 0;
         }
         else if ((posX >= -2.4f) && (posX < 0f))
         {
-            Linenumber = 1;
+            LineNumber = 1;
         }
         else if ((posX >= 0f) && (posX < 2.4f))
         {
-            Linenumber = 2;
+            LineNumber = 2;
         }
         else if ((posX >= -2.4f) && (posX <= 4.8f))
         {
-            Linenumber = 3;
+            LineNumber = 3;
         }
     }
 
+    // (Race) LineNumber에 따라 Player의 위치 설정
+    private float SetRaceLine(int LineNumber)
+    {
+        switch (LineNumber)
+        {
+            case 0: posX = -3.6f; break;
+            case 1: posX = -1.2f; break;
+            case 2: posX = 1.2f; break;
+            case 3: posX = 3.6f; break;
+        }
+        return posX;
+    }
 
     // [Mode: SATELLITE_vertical]
     bool SATELLITE_verticalUpDownState = true;              // SATELLITE_vertical의 위/아래 진행상태(true:우상향, false:우하향) 
@@ -543,6 +769,7 @@ public class PlayerMove : MonoBehaviour
         {
             dir = new Vector3(0, -1, 1);                    // 우하향 45도 방향
         }
+
         // 3. SATELLITE_vertical 모션 적용
         SATELLITE_verticalMotion();
         // 4. 움직임 적용
@@ -594,7 +821,8 @@ public class PlayerMove : MonoBehaviour
         {
             yVelocity += gravity * Time.deltaTime;
         }
-        dir.y = yVelocity;
+        // reversGravityState에 따른 중력 방향 전환
+        ReverseGravity();
 
         // 3. SATELLITE_horizontal 모션 적용
         SATELLITE_horizontalMotion();
@@ -612,7 +840,6 @@ public class PlayerMove : MonoBehaviour
         {
             angle = -angle;
         }
-        print(angle);
         Quaternion moveAngle = Quaternion.Euler(90, angle, 0);
         MotionSATELLITE.transform.rotation = Quaternion.Lerp(MotionSATELLITE.transform.rotation, moveAngle, 0.1f);
     }
@@ -638,7 +865,8 @@ public class PlayerMove : MonoBehaviour
                 yVelocity = Mathf.Clamp(yVelocity, -0.1f, 0.1f);
             }
         }
-        dir.y = yVelocity;
+        // reversGravityState에 따른 중력 방향 전환
+        ReverseGravity();
 
         // 2. MotionRocket 방향 설정
         //  : dir벡터와 Vector3의 사이각을 구하여 MotionRocket이 진행방향에 따라 방향을 향하도록 설정
