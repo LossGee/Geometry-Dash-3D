@@ -56,27 +56,27 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\PlayerMove@Rocket.cs" />
+    <Compile Include="Assets\Scripts\PlayerMove@UFO.cs" />
+    <Compile Include="Assets\Scripts\PlayerMove@Forward.cs" />
     <Compile Include="Assets\Scripts\ChangeToSatelliteVertical.cs" />
     <Compile Include="Assets\Scripts\Obsctacle.cs" />
     <Compile Include="Assets\Scripts\CameraMove.cs" />
+    <Compile Include="Assets\Scripts\PlayerMove.cs" />
     <Compile Include="Assets\Scripts\ChangeToForward.cs" />
+    <Compile Include="Assets\Scripts\PlayerMove@Satellite_horizontal.cs" />
     <Compile Include="Assets\Scripts\AirJump.cs" />
     <Compile Include="Assets\Scripts\ChangeToUFO.cs" />
+    <Compile Include="Assets\Scripts\PlayerMove@Cube.cs" />
     <Compile Include="Assets\Scripts\ReverseSidePotal.cs" />
     <Compile Include="Assets\Scripts\ChangeToSatelliteHorizontal.cs" />
     <Compile Include="Assets\Scripts\PlayerMove@Satellite_verticle.cs" />
+    <Compile Include="Assets\Scripts\PlayerMove@Race.cs" />
     <Compile Include="Assets\Scripts\ChangeToCube.cs" />
     <Compile Include="Assets\Scripts\ReverseGravityPotal.cs" />
     <Compile Include="Assets\Scripts\PowerJump.cs" />
     <Compile Include="Assets\Scripts\ChangeToRace.cs" />
     <Compile Include="Assets\Scripts\ChangeToRocket.cs" />
-    <Compile Include="Assets\Scripts\PlayerMove@Cube.cs" />
-    <Compile Include="Assets\Scripts\PlayerMove@UFO.cs" />
-    <Compile Include="Assets\Scripts\PlayerMove@Race.cs" />
-    <Compile Include="Assets\Scripts\PlayerMove@Satellite_horizontal.cs" />
-    <Compile Include="Assets\Scripts\PlayerMove@Rocket.cs" />
-    <Compile Include="Assets\Scripts\PlayerMove@Forward.cs" />
-    <Compile Include="Assets\Scripts\PlayerMove.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

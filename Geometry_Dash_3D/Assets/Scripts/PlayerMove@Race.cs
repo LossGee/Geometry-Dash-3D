@@ -60,13 +60,14 @@ public partial class PlayerMove : MonoBehaviour
     // (Race) 좌우이동시 Race Motion의 좌우 방향 모션
     private void RaceMotion()
     {
-        angle = Vector3.Angle(Vector3.forward, dir);
+        angle = Vector3.Angle(Vector3.forward, new Vector3(dir.x, 0, dir.z));
         if (dir.x > 0)
         {
             angle = -angle;
         }
         Quaternion next = Quaternion.Euler(-90, -90 - angle, -90);
         MotionRace.transform.rotation = Quaternion.Lerp(MotionRace.transform.rotation, next, 0.1f);
+        print("dir: " + dir); 
     }
     // (Race) 현재위치에 따라 어느 Race Line에 있는지 검사
     private void CheckLineNumber()

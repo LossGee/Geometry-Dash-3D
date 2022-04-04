@@ -11,8 +11,6 @@ public partial class PlayerMove : MonoBehaviour
     // Player(Locket) 변수
     private void UpdateRocket()
     {
-        // 중력적용
-        gravity = RocketGravity;                            // RocketGravity 중력을 gravity에 적용
         // cc의 위(Above), 아래(Below) 충돌 여부 검사
         isContactAB = ((cc.collisionFlags & CollisionFlags.Below) != 0)
                       || ((cc.collisionFlags & CollisionFlags.Above) != 0);
@@ -24,7 +22,7 @@ public partial class PlayerMove : MonoBehaviour
             yVelocity += rocketUpPower;
             if (isContactAB)
             {
-                yVelocity = Mathf.Clamp(yVelocity, -0.1f, 0.1f);
+                yVelocity = Mathf.Clamp(yVelocity, -0.01f, 0.01f);
             }
         }
         // reversGravityState에 따른 중력 방향 전환
@@ -34,7 +32,7 @@ public partial class PlayerMove : MonoBehaviour
         //  : dir벡터와 Vector3의 사이각을 구하여 MotionRocket이 진행방향에 따라 방향을 향하도록 설정
         if (isContactAB)                                    // 천장 or 바닥에 접촉한 경우
         {
-            angle = Mathf.Lerp(0, angle, 0.7f);             // 자연스럽게 바닥에 착지하는 모션을 위한 선형보간
+            angle = Mathf.Lerp(0, angle, 0.1f);             // 자연스럽게 바닥에 착지하는 모션을 위한 선형보간
         }
         else                                                // 공중에 위치한 경우
         {

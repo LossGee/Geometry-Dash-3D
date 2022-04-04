@@ -74,8 +74,12 @@ public partial class PlayerMove : MonoBehaviour
         get { return _yVelocity; }
         set
         {
-            print("changeYVelocity : " + _yVelocity);
-            value = Mathf.Clamp(value, -2f, 2f);
+            //print("changeYVelocity : " + _yVelocity);
+            if (Mode == ModeState.CUBE || Mode == ModeState.RACE ||
+                Mode == ModeState.SATELLITE_horizontal)
+            {
+                value = Mathf.Clamp(value, -powerJumpPower, powerJumpPower);
+            }
             _yVelocity = value;
         }
     }
@@ -109,7 +113,7 @@ public partial class PlayerMove : MonoBehaviour
         cc = GetComponent<CharacterController>();
         dir = Vector3.forward;
     }
-    
+
     // Update is called once per frame
     void Update()
     {
