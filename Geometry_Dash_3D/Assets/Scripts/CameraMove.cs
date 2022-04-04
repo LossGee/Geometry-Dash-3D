@@ -90,14 +90,11 @@ public class CameraMove : MonoBehaviour
         SetDefaultMode();
         if (nowAngle == RightSideAnlge && reverseLeftRight)
         {
-            if (PlayerMove.Instance.reversGravityState)
-            {
-                nowAngle = RG_LeftSideAngle;
-            }
-            else
-            {
-                nowAngle = LeftSideAngle;
-            }
+            nowAngle = LeftSideAngle;
+        }
+        if (nowAngle == RG_RightSideAnlge && reverseLeftRight)
+        {
+            nowAngle = RG_LeftSideAngle;
         }
 
         // 2. nowAngle의 position, rotation 가져오기
