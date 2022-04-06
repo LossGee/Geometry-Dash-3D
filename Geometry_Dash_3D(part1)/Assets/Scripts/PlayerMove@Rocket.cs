@@ -16,15 +16,15 @@ public partial class PlayerMove : MonoBehaviour
                       || ((cc.collisionFlags & CollisionFlags.Above) != 0);
 
         // 1. Rocket 모드의 dir 구하기
-        yVelocity += gravity * Time.deltaTime;              // yVelocity에 garvity 누적 
         if (Input.GetKey(KeyCode.Space))                    // space 입력 시, yVelocitydp rocketUpPower 누적하기
         {
             yVelocity += rocketUpPower;
             if (isContactAB)
             {
-                yVelocity = Mathf.Clamp(yVelocity, -0.01f, 0.01f);
+                yVelocity = Mathf.Clamp(yVelocity, -0.2f, 0.2f);
             }
         }
+        yVelocity += gravity * Time.deltaTime;              // yVelocity에 garvity 누적 
         // reversGravityState에 따른 중력 방향 전환
         ReverseGravity();
 

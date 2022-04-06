@@ -117,6 +117,12 @@ public partial class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Dead 결과 실행(dead == true일 때): Play 다시 시작
+        if (dead)
+        {
+            dead = false;
+            SceneManager.LoadScene(0);                        // 다시시작
+        }
         if (changeMode)
         {
             SetMotion();                                             // Mode별 Mode 담당 GameObject 활성화
@@ -136,12 +142,6 @@ public partial class PlayerMove : MonoBehaviour
             case ModeState.FORWARD: UpdateForward(); break;
         }
 
-        // Dead 결과 실행(dead == true일 때): Play 다시 시작
-        if (dead)
-        {
-            dead = false;
-            SceneManager.LoadScene(0);                        // 다시시작
-        }
     }
     // (공통) Mode 전환 Potal을 만날 경우, changeMode를 true로 설정해주는 함수 
     public void ChangeMode()
