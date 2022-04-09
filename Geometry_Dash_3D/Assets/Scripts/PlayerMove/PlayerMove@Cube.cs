@@ -11,7 +11,7 @@ public partial class PlayerMove : MonoBehaviour
     public bool jumpState = false;                                              // jump 상태(ture: 점프중, false: 점프X) - 이단 점프 방지
     public bool jumpTurn = true;                                                // jump시 회전을 180도로 제한하기 위한 변수
     public bool dropTurn = true;                                                // drop시 회전을 90도로 제한하기 위한 변수
-    public float rot = 0f;                                                      // jump에서 공중회전 각도 누적 변수
+    float rot = 0f;                                                      // jump에서 공중회전 각도 누적 변수
     private void UpdateCube()
     {
         // 1. 천장 or 바닥과 접촉여부 검사(상하중력 전환인 경우 포함)

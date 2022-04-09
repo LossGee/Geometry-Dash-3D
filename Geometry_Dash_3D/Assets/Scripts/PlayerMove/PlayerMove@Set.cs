@@ -129,11 +129,10 @@ public partial class PlayerMove : MonoBehaviour
         jumpTurn = true;
         dropTurn = true;
 
-        //transform.position = startPosition.position;
-        //transform.rotation = startPosition.rotation;
+        transform.position = startPosition.position;
+        transform.rotation = startPosition.rotation;
         reversGravityState = false;
         yVelocity = 0;
         CameraMove.Instance.reverseLeftRightAtStartPoint();
-        
     }
 }

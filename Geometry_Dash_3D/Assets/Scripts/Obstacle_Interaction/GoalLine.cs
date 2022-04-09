@@ -6,14 +6,13 @@ using UnityEngine.SceneManagement;
 
 public class GoalLine : MonoBehaviour
 {
-    public GameObject CompeletePanel;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
         {
             print("Complete!!!");
-            SceneManager.LoadScene("MainScene");
+            SceneManager.LoadScene("CompleteScene");
         }
     }
 
