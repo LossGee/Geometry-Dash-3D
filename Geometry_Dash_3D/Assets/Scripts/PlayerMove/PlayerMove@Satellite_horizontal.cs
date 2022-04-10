@@ -54,6 +54,6 @@ public partial class PlayerMove : MonoBehaviour
         }
         Quaternion moveAngle = Quaternion.Euler(0, angle, 0);
         MotionSATELLITE_horizontal.transform.rotation 
-            = Quaternion.Lerp(MotionSATELLITE_horizontal.transform.rotation, moveAngle, 0.05f);
+            = Quaternion.Lerp(MotionSATELLITE_horizontal.transform.rotation, moveAngle, 0.2f);
     }
 }

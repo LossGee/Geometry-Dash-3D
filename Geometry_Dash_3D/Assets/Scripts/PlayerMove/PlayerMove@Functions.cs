@@ -46,18 +46,18 @@ public partial class PlayerMove : MonoBehaviour
             }
         }
         // Dead 조건(추가, SATELLITE_horizotal): 좌우 벽에 접촉되었을 때
-        if (Mode == ModeState.SATELLITE_horizontal)
-        {
-            // 좌우 접촉 여부 확인
-            isContactSides = (cc.collisionFlags & CollisionFlags.Sides) != 0;
-            // 접촉시 dead = true
-            if (isContactSides)
-            {
-                print("333333333333");
+        //if (Mode == ModeState.SATELLITE_horizontal)
+        //{
+            //// 좌우 접촉 여부 확인
+            //isContactSides = (cc.collisionFlags & CollisionFlags.Sides) != 0;
+            //// 접촉시 dead = true
+            //if (isContactSides)
+            //{
+            //    print("333333333333");
 
-                dead = true;
-            }
-        }
+            //    dead = true;
+            //}
+        //}
     }
     // (공통) 장애물 충돌시 dead true 처리
     public void CrashObstacle()                                 // 장애물에 부딪혔을 때
